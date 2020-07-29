@@ -2,8 +2,8 @@ import argparse
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D, Input
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D, Input, Reshape
 
 
 def mnist_data():
@@ -44,9 +44,19 @@ def cnn_model():
     return cnn
 
 
-def run_model():
+def logistic_model():
+    model = Sequential([
+        Reshape((784,), input_shape=(28, 28, 1)),
+        Dense(10, activation='softmax')
+    ])
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    return model
+
+
+def run_model(name):
     (x_train, y_train), (x_test, y_test) = mnist_data()
-    model = cnn_model()
+    model = globals()[f'{name}_model']()
     model.fit(x_train, y_train, batch_size=64, epochs=3)
     model.evaluate(x_test, y_test)
     return model
@@ -54,8 +64,9 @@ def run_model():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('model', type=str, help='Name of the model to train')
     parser.add_argument('name', type=str, help='Name of the model to be saved')
     args = parser.parse_args()
 
-    model = run_model()
+    model = run_model(args.model)
     model.save(args.name)
