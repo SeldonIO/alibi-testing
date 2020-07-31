@@ -11,5 +11,5 @@ setup(
         'scikit-learn',
         'tensorflow>=2.0.0'
         ],
-    package_data={'': ['models/*']}
+    package_data={'': ['models/**/*']}
 )
