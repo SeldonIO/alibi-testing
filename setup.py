@@ -1,4 +1,15 @@
+import os
 from setuptools import setup, find_packages
+
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+# load all data files recursively https://stackoverflow.com/a/36693250
+model_files = package_files('alibi_test_models/models/')
 
 setup(
     name='alibi-test-models',
@@ -11,5 +22,5 @@ setup(
         'scikit-learn',
         'tensorflow>=2.0.0'
         ],
-    package_data={'': ['models/**/*']}
+    package_data={'': model_files}
 )
