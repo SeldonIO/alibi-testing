@@ -2,16 +2,6 @@ import argparse
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-
-
-def iris_data(seed=42):
-    X, y = load_iris(return_X_y=True)
-    X = (X - X.mean(axis=0)) / X.std(axis=0)  # scale dataset
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=seed)
-
-    return (x_train, y_train), (x_test, y_test)
 
 
 def ffn_model():
@@ -97,6 +87,5 @@ if __name__ == '__main__':
     elif args.model == 'ae':
         ae_name = saved_name(args.model)
         enc_name = 'enc'
-        enc_name = saved_name(enc_name)
         models[0].save(ae_name)
         models[1].save(enc_name)

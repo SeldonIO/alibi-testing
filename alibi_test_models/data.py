@@ -1,8 +1,17 @@
 import numpy as np
+from sklearn.datasets import load_iris
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from alibi.datasets import fetch_adult
+
+
+def iris_data(seed=42):
+    X, y = load_iris(return_X_y=True)
+    X = (X - X.mean(axis=0)) / X.std(axis=0)  # scale dataset
+    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=seed)
+
+    return (x_train, y_train), (x_test, y_test)
 
 
 def adult_data(seed=42):
