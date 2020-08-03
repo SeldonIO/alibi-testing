@@ -7,11 +7,25 @@ from alibi.datasets import fetch_adult
 
 
 def get_iris_data(seed=42):
-    X, y = load_iris(return_X_y=True)
+    """
+    Load the Iris dataset.
+    """
+    data = load_iris()
+    X, y = data.data, data.target
     X = (X - X.mean(axis=0)) / X.std(axis=0)  # scale dataset
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=seed)
 
-    return (x_train, y_train), (x_test, y_test)
+    return {
+        'X_train': x_train,
+        'y_train': y_train,
+        'X_test': x_test,
+        'y_test': y_test,
+        'preprocessor': None,
+        'metadata': {
+            'feature_names': data.feature_names,
+            'name': 'iris'
+        }
+    }
 
 
 def get_adult_data(seed=42):

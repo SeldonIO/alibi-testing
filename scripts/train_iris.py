@@ -39,14 +39,16 @@ def ae_model():
 
 
 def run_ffn():
-    (x_train, y_train), (x_test, y_test) = get_iris_data()
+    data = get_iris_data()
+    x_train, y_train = data['X_train'], data['y_train']
     model = ffn_model()
     model.fit(x_train, y_train, batch_size=128, epochs=500)
     return model
 
 
 def run_ae():
-    (x_train, y_train), (x_test, y_test) = get_iris_data()
+    data = get_iris_data()
+    x_train, y_train = data['X_train'], data['y_train']
     ae, enc, dec = ae_model()
     ae.fit(x_train, x_train, batch_size=32, epochs=100)
     return ae, enc
