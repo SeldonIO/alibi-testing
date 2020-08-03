@@ -1,26 +1,9 @@
 import argparse
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.utils import to_categorical
+
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D, Input, Reshape
 
-
-def mnist_data():
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-
-    x_train = x_train.astype('float32') / 255
-    x_test = x_test.astype('float32') / 255
-    x_train = np.reshape(x_train, x_train.shape + (1,))
-    x_test = np.reshape(x_test, x_test.shape + (1,))
-    y_train = to_categorical(y_train)
-    y_test = to_categorical(y_test)
-
-    xmin, xmax = -.5, .5
-    x_train = ((x_train - x_train.min()) / (x_train.max() - x_train.min())) * (xmax - xmin) + xmin
-    x_test = ((x_test - x_test.min()) / (x_test.max() - x_test.min())) * (xmax - xmin) + xmin
-
-    return (x_train, y_train), (x_test, y_test)
+from alibi_test_models.data import get_mnist_data
 
 
 def cnn_model():
@@ -55,7 +38,8 @@ def logistic_model():
 
 
 def run_model(name):
-    (x_train, y_train), (x_test, y_test) = mnist_data()
+    data = get_mnist_data()
+    x_train, y_train, x_test, y_test = data['X_train'], data['y_train'], data['X_test'], data['y_test']
     model = globals()[f'{name}_model']()
     model.fit(x_train, y_train, batch_size=64, epochs=3)
     model.evaluate(x_test, y_test)

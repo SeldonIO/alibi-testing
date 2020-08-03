@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
 from alibi.datasets import fetch_adult
 
@@ -24,6 +25,32 @@ def get_iris_data(seed=42):
         'metadata': {
             'feature_names': data.feature_names,
             'name': 'iris'
+        }
+    }
+
+
+def get_mnist_data():
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+    x_train = x_train.astype('float32') / 255
+    x_test = x_test.astype('float32') / 255
+    x_train = np.reshape(x_train, x_train.shape + (1,))
+    x_test = np.reshape(x_test, x_test.shape + (1,))
+    y_train = to_categorical(y_train)
+    y_test = to_categorical(y_test)
+
+    xmin, xmax = -.5, .5
+    x_train = ((x_train - x_train.min()) / (x_train.max() - x_train.min())) * (xmax - xmin) + xmin
+    x_test = ((x_test - x_test.min()) / (x_test.max() - x_test.min())) * (xmax - xmin) + xmin
+
+    return {
+        'X_train': x_train,
+        'y_train': y_train,
+        'X_test': x_test,
+        'y_test': y_test,
+        'preprocessr': None,
+        'metadata': {
+            'name': 'mnist'
         }
     }
 
