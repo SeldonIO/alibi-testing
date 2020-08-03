@@ -30,6 +30,9 @@ def get_iris_data(seed=42):
 
 
 def get_mnist_data():
+    """
+    Load the MNIST dataset.
+    """
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
     x_train = x_train.astype('float32') / 255
@@ -56,6 +59,9 @@ def get_mnist_data():
 
 
 def get_adult_data(seed=42):
+    """
+    Load the Adult dataset.
+    """
     adult = fetch_adult()
 
     X = adult.data
@@ -84,4 +90,13 @@ def get_adult_data(seed=42):
     y_train = to_categorical(y_train)
     y_test = to_categorical(y_test)
 
-    return (x_train, y_train), (x_test, y_test)
+    return {
+        'X_train': x_train,
+        'y_train': y_train,
+        'X_test': x_test,
+        'y_test': y_test,
+        'preprocessr': None,
+        'metadata': {
+            'name': 'adult'
+        }
+    }
