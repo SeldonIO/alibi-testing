@@ -1,10 +1,11 @@
 import numpy as np
 from sklearn.datasets import load_iris
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
-from alibi.datasets import fetch_adult
+from alibi.datasets import fetch_adult, fetch_movie_sentiment
 
 
 def get_iris_data(seed=42):
@@ -55,6 +56,29 @@ def get_mnist_data():
         'metadata': {
             'name': 'mnist'
         }
+    }
+
+
+def get_movie_sentiment_dataset(seed=42):
+    """
+    Load and prepare movie sentiment dataset.
+    """
+
+    movies = fetch_movie_sentiment()
+    data = movies.data
+    labels = movies.target
+    x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=seed)
+    y_train = np.array(y_train)
+    vectorizer = CountVectorizer(min_df=1)
+    vectorizer.fit(x_train)
+
+    return {
+        'X_train': x_train,
+        'y_train': y_train,
+        'X_test': x_test,
+        'y_test': y_test,
+        'preprocessor': vectorizer,
+        'metadata': {'name': 'movie_sentiment'},
     }
 
 
