@@ -59,7 +59,7 @@ def get_mnist_data():
     }
 
 
-def get_movie_sentiment_dataset(seed=42):
+def get_movie_sentiment_data(seed=42):
     """
     Load and prepare movie sentiment dataset.
     """
