@@ -1,11 +1,13 @@
 import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
 from alibi.datasets import fetch_adult, fetch_movie_sentiment
+from alibi.utils.mapping import ord_to_ohe
 
 
 def get_iris_data(seed=42):
@@ -82,45 +84,56 @@ def get_movie_sentiment_data(seed=42):
     }
 
 
-def get_adult_data(seed=42):
+def get_adult_data(seed=42, categorical_target=False):
     """
-    Load the Adult dataset.
+    Load and preprocess the Adult dataset.
     """
+
+    # load raw data
     adult = fetch_adult()
+    data = adult.data
+    target = adult.target
+    feature_names = adult.feature_names
+    category_map = adult.category_map
 
-    X = adult.data
-    X_ord = np.c_[X[:, 1:8], X[:, 11], X[:, 0], X[:, 8:11]]
-    y = adult.target
+    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=seed)
 
-    # scale numerical features
-    X_num = X_ord[:, -4:].astype(np.float32, copy=False)
-    xmin, xmax = X_num.min(axis=0), X_num.max(axis=0)
-    rng = (-1., 1.)
-    X_num_scaled = (X_num - xmin) / (xmax - xmin) * (rng[1] - rng[0]) + rng[0]
+    # Create feature transformation pipeline
+    ordinal_features = [x for x in range(len(feature_names)) if x not in list(category_map.keys())]
+    ordinal_transformer = MinMaxScaler(feature_range=(-1.0, 1.0))
 
-    # OHE categorical features
-    X_cat = X_ord[:, :-4].copy()
-    ohe = OneHotEncoder()
-    ohe.fit(X_cat)
-    X_cat_ohe = ohe.transform(X_cat)
+    categorical_features = list(category_map.keys())
+    categorical_transformer = OneHotEncoder()
 
-    # combine categorical and numerical data
-    X_comb = np.c_[X_cat_ohe.todense(), X_num_scaled].astype(np.float32, copy=False)
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('cat', categorical_transformer, categorical_features),
+            ('num', ordinal_transformer, ordinal_features)
+        ]
+    )
+    preprocessor.fit(X_train)
 
-    # split in train and test set
-    x_train, x_test, y_train, y_test = train_test_split(X_comb, y, test_size=0.2, random_state=seed)
+    if categorical_target:
+        y_train = to_categorical(y_train)
+        y_test = to_categorical(y_test)
 
-    assert x_train.shape[1] == 57
-    y_train = to_categorical(y_train)
-    y_test = to_categorical(y_test)
+    # calculate categorical variable embeddings with the modified feature columns
+    cat_vars_ord = {}
+    for ix, (key, val) in enumerate(category_map.items()):
+        cat_vars_ord[ix] = len(val)
+    cat_vars_ohe = ord_to_ohe(cat_vars_ord)
 
     return {
-        'X_train': x_train,
+        'X_train': X_train,
         'y_train': y_train,
-        'X_test': x_test,
+        'X_test': X_test,
         'y_test': y_test,
-        'preprocessr': None,
+        'preprocessor': preprocessor,
         'metadata': {
+            'feature_names': feature_names,
+            'category_map': category_map,
+            'cat_vars_ord': cat_vars_ord,
+            'cat_vars_ohe': cat_vars_ohe,
             'name': 'adult'
         }
     }

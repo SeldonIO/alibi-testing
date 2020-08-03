@@ -19,8 +19,10 @@ def ffn_model():
 
 
 def run_model(name):
-    data = get_adult_data()
-    x_train, y_train, x_test, y_test = data['X_train'], data['y_train'], data['X_test'], data['y_test']
+    data = get_adult_data(categorical_target=True)
+    pre = data['preprocessor']
+    x_train, x_test = pre.transform(data['X_train']), pre.transform(data['X_test'])
+    y_train, y_test = data['y_train'], data['y_test']
     model = globals()[f'{name}_model']()
     model.fit(x_train, y_train, batch_size=128, epochs=5)
     model.evaluate(x_test, y_test)
