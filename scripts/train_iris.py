@@ -3,6 +3,8 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
+from alibi_test_models.data import get_iris_data
+
 
 def ffn_model():
     x_in = Input(shape=(4,))
@@ -37,14 +39,14 @@ def ae_model():
 
 
 def run_ffn():
-    (x_train, y_train), (x_test, y_test) = iris_data()
+    (x_train, y_train), (x_test, y_test) = get_iris_data()
     model = ffn_model()
     model.fit(x_train, y_train, batch_size=128, epochs=500)
     return model
 
 
 def run_ae():
-    (x_train, y_train), (x_test, y_test) = iris_data()
+    (x_train, y_train), (x_test, y_test) = get_iris_data()
     ae, enc, dec = ae_model()
     ae.fit(x_train, x_train, batch_size=32, epochs=100)
     return ae, enc

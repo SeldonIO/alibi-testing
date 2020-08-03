@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
-from alibi_test_models.data import adult_data
+from alibi_test_models.data import get_adult_data
 
 
 def ffn_model():
@@ -19,7 +19,7 @@ def ffn_model():
 
 
 def run_model(name):
-    (x_train, y_train), (x_test, y_test) = adult_data()
+    (x_train, y_train), (x_test, y_test) = get_adult_data()
     model = globals()[f'{name}_model']()
     model.fit(x_train, y_train, batch_size=128, epochs=5)
     model.evaluate(x_test, y_test)
