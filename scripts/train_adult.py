@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
-from alibi_test_models.data import get_adult_data
+from alibi_testing.data import get_adult_data
 
 
 def ffn_model():

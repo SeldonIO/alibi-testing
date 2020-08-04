@@ -3,7 +3,7 @@ import argparse
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D, Input, Reshape
 
-from alibi_test_models.data import get_mnist_data
+from alibi_testing.data import get_mnist_data
 
 
 def cnn_model():

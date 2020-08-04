@@ -9,10 +9,10 @@ def package_files(directory):
     return paths
 
 # load all data files recursively https://stackoverflow.com/a/36693250
-model_files = package_files('alibi_test_models/models/')
+model_files = package_files('alibi_testing/models/')
 
 setup(
-    name='alibi-test-models',
+    name='alibi-testing',
     version='0.0.1',
     packages=find_packages(),
     python_requires='>=3.6',
