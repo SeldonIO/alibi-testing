@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_iris, load_boston
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
@@ -29,6 +29,28 @@ def get_iris_data(seed=42):
             'feature_names': data.feature_names,
             'name': 'iris'
         }
+    }
+
+
+def get_boston_data(seed=42):
+    """
+    Load the Boston housing dataset.
+    """
+    dataset = load_boston()
+    data = dataset.data
+    labels = dataset.target
+    feature_names = dataset.feature_names
+    X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=seed)
+
+    return {
+        'X_train': X_train,
+        'y_train': y_train,
+        'X_test': X_test,
+        'y_test': y_test,
+        'preprocessor': None,
+        'metadata': {
+            'feature_names': feature_names,
+            'name': 'boston'}
     }
 
 
