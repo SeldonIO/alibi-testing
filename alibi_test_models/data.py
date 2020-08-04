@@ -7,7 +7,6 @@ from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
 from alibi.datasets import fetch_adult, fetch_movie_sentiment
-from alibi.utils.mapping import ord_to_ohe
 
 
 def get_iris_data(seed=42):
@@ -139,11 +138,12 @@ def get_adult_data(seed=42, categorical_target=False):
         y_train = to_categorical(y_train)
         y_test = to_categorical(y_test)
 
-    # calculate categorical variable embeddings with the modified feature columns
+    # calculate categorical variable columns with the modified feature columns
     cat_vars_ord = {}
     for ix, (key, val) in enumerate(category_map.items()):
         cat_vars_ord[ix] = len(val)
-    cat_vars_ohe = ord_to_ohe(cat_vars_ord)
+    ohe_keys = np.concatenate(([0], np.cumsum(list(cat_vars_ord.values()))[:-1]))
+    cat_vars_ohe = {k: v for k, v in zip(ohe_keys, cat_vars_ord.values())}
 
     return {
         'X_train': X_train,
