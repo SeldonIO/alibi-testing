@@ -1,4 +1,10 @@
+import logging
+import tarfile
+
 import numpy as np
+import pandas as pd
+import requests
+from requests import RequestException
 from sklearn.datasets import load_iris, load_boston
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
@@ -7,6 +13,8 @@ from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
 from typing import Union, Tuple
+
+logger = logging.getLogger(__name__)
 
 
 ############################################################################################

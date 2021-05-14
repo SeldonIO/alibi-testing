@@ -15,11 +15,13 @@ model_files = package_files('alibi_testing/models/')
 
 setup(
     name='alibi-testing',
-    version='0.0.4',
+    version='0.0.5',
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=[
         'numpy>=1.16.2, <2.0.0',
+        'pandas>=0.23.3, <2.0.0',
+        'requests>=2.21.0, <3.0.0',
         'scikit-learn>=0.20.2, <0.25.0',
         'tensorflow>=2.0.0, <2.5.0',
     ],
