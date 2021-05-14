@@ -1,3 +1,4 @@
+from io import BytesIO, StringIO
 import logging
 import tarfile
 
@@ -9,7 +10,7 @@ from sklearn.datasets import load_iris, load_boston
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler, OneHotEncoder
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
 from typing import Union, Tuple
