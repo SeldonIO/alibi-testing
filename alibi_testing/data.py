@@ -6,10 +6,34 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
+from typing import Union, Tuple
+
 
 ############################################################################################
 # The following is copy-pasted from the alibi repo to avoid a dependency on alibi itself
 # TODO: figure out a cleaner way of doing this
+class Bunch(dict):
+    """
+    Container object for internal datasets
+    Dictionary-like object that exposes its keys as attributes.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(kwargs)
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+    def __dir__(self):
+        return self.keys()
+
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(key)
+
+
 ADULT_URLS = ['https://storage.googleapis.com/seldon-datasets/adult/adult.data',
               'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data',
               'http://mlr.cs.umass.edu/ml/machine-learning-databases/adult/adult.data']
