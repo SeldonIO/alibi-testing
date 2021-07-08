@@ -15,7 +15,7 @@ model_files = package_files('alibi_testing/models/')
 
 setup(
     name='alibi-testing',
-    version='0.0.6',
+    version='0.0.7',
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=[
@@ -23,7 +23,7 @@ setup(
         'pandas>=0.23.3, <2.0.0',
         'requests>=2.21.0, <3.0.0',
         'scikit-learn>=0.20.2, <0.25.0',
-        'tensorflow>=2.0.0, <2.5.0',
+        'tensorflow>=2.0.0, <2.6.0',
     ],
     package_data={'': model_files}
 )
