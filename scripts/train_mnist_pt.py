@@ -1,0 +1,96 @@
+import argparse
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision
+
+
+def load_data():
+    transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    mnist_train = torchvision.datasets.MNIST(root='datasets',
+                                              train=True,
+                                              download=True,
+                                              transform=transform)
+    mnist_test = torchvision.datasets.MNIST(root='datasets',
+                                             train=False,
+                                             transform=transform)
+
+    train_loader = torch.utils.data.DataLoader(mnist_train, batch_size=64, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(mnist_test, batch_size=64, shuffle=True)
+
+    return train_loader, test_loader
+
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=64, kernel_size=2, padding='same')
+        self.conv2 = nn.Conv2d(in_channels=64, out_channels=32, kernel_size=2, padding='same')
+        self.fc1 = nn.Linear(1568, 256)
+        self.fc2 = nn.Linear(256, 10)
+
+    def forward(self, x):
+        x = F.dropout(F.max_pool2d(F.relu(self.conv1(x)), 2), p=0.3, training=self.training)
+        x = F.dropout(F.max_pool2d(F.relu(self.conv2(x)), 2), p=0.3, training=self.training)
+        x = x.view(-1, 1568)
+        x = F.dropout(F.relu(self.fc1(x)), p=0.5, training=self.training)
+        x = self.fc2(x)
+        return x
+
+
+def train(model, optimizer, train_loader, epoch, log_interval=100):
+    model.train()
+    for batch_idx, (data, target) in enumerate(train_loader):
+        optimizer.zero_grad()
+        out = model(data)
+        loss = F.cross_entropy(out, target)
+        loss.backward()
+        optimizer.step()
+
+        if batch_idx % log_interval == 0:
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch,
+                                                                           batch_idx * len(data),
+                                                                           len(train_loader.dataset),
+                                                                           100. * batch_idx / len(train_loader),
+                                                                           loss.item()))
+
+
+def test(model, test_loader):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            out = model(data)
+            test_loss += F.cross_entropy(out, target, reduce=None).item()
+            pred = out.data.max(1, keepdim=True)[1]
+            correct += pred.eq(target.data.view_as(pred)).sum()
+    test_loss /= len(test_loader.dataset)
+    print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss,
+                                                                              correct,
+                                                                              len(test_loader.dataset),
+                                                                              100. * correct / len(
+                                                                                  test_loader.dataset)))
+
+
+def run_model():
+    train_loader, test_loader = load_data()
+    model = Model()
+    optimizer = torch.optim.Adam(model.parameters())
+
+    n_epochs = 3
+
+    for epoch in range(1, n_epochs + 1):
+        train(model, optimizer, train_loader, epoch)
+        test(model, test_loader)
+
+    return model
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name', type=str, help='Name of the model to be saved')
+    args = parser.parse_args()
+
+    model = run_model()
+    torch.save(model, args.name)

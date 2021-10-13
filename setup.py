@@ -15,7 +15,7 @@ model_files = package_files('alibi_testing/models/')
 
 setup(
     name='alibi-testing',
-    version='0.0.7',
+    version='0.0.8',
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=[
@@ -24,6 +24,8 @@ setup(
         'requests>=2.21.0, <3.0.0',
         'scikit-learn>=0.20.2, <0.25.0',
         'tensorflow>=2.0.0, <2.6.0',
+        'torch>=1.9.0, <2.0.0',
+        'torchvision>=0.10.0, <1.0.0'
     ],
     package_data={'': model_files}
 )
