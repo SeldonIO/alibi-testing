@@ -15,7 +15,7 @@ model_files = package_files('alibi_testing/models/')
 
 setup(
     name='alibi-testing',
-    version='0.0.9',
+    version='0.0.10',
     packages=find_packages(),
     python_requires='>=3.7',
     install_requires=[  # deps version bounds are copied from alibi setup.py (and requirements/dev.txt)
