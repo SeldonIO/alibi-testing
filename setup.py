@@ -13,12 +13,8 @@ def package_files(directory):
 # load all data files recursively https://stackoverflow.com/a/36693250
 model_files = package_files('alibi_testing/models/')
 
-setup(
-    name='alibi-testing',
-    version='0.0.11',
-    packages=find_packages(),
-    python_requires='>=3.7',
-    install_requires=[  # deps version bounds are copied from alibi setup.py (and requirements/dev.txt)
+extras_require = {
+    'training': [  # deps required for training models
         'numpy>=1.16.2, <2.0.0',
         'pandas>=0.23.3, <2.0.0',
         'requests>=2.21.0, <3.0.0',
@@ -27,5 +23,14 @@ setup(
         'torch>=1.9.0, <2.0.0',
         'torchvision>=0.10.0, <1.0.0'
     ],
+}
+
+setup(
+    name='alibi-testing',
+    version='0.1.0',
+    packages=find_packages(),
+    python_requires='>=3.7',
+    extras_require=extras_require,
+    install_requires=[],  # alibi and alibi-detect are responsible for installing deps prior to testing
     package_data={'': model_files}
 )
