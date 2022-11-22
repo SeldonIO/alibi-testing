@@ -13,11 +13,17 @@ def package_files(directory):
 # load all data files recursively https://stackoverflow.com/a/36693250
 model_files = package_files('alibi_testing/models/')
 
-# Optional deps. Deps that are already installed by both alibi and alibi-detect do not need to be duplicated here
 extras_require = {
-    'training': ['torchvision>=0.10.0, <1.0.0'], # deps required for training, but not to run models
+    'training': [  # deps required for training models
+        'numpy>=1.16.2, <2.0.0',
+        'pandas>=0.23.3, <2.0.0',
+        'requests>=2.21.0, <3.0.0',
+        'scikit-learn>=0.20.2, <2.0.0',
+        'tensorflow>=2.0.0, !=2.6.0, !=2.6.1, <2.11.0',  
+        'torch>=1.9.0, <2.0.0',
+        'torchvision>=0.10.0, <1.0.0'
+    ],
 }
-
 
 setup(
     name='alibi-testing',
@@ -25,6 +31,6 @@ setup(
     packages=find_packages(),
     python_requires='>=3.7',
     extras_require=extras_require,
-    install_requires=[],  # deps installed by both alibi and alibi-detect do not need to be duplicated here
+    install_requires=[],  # alibi and alibi-detect are responsible for installing deps prior to testing
     package_data={'': model_files}
 )
