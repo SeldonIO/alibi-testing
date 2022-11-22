@@ -23,7 +23,7 @@ extras_require = {
 
 setup(
     name='alibi-testing',
-    version='0.0.10',
+    version='0.0.11',
     packages=find_packages(),
     python_requires='>=3.7',
     extras_require=extras_require,

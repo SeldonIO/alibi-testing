@@ -16,7 +16,7 @@ class CNN(nn.Module):
     def forward(self, x):
         x = F.dropout(F.max_pool2d(F.relu(self.conv1(x)), 2), p=0.3, training=self.training)
         x = F.dropout(F.max_pool2d(F.relu(self.conv2(x)), 2), p=0.3, training=self.training)
-        x = x.view(-1, 1568)
+        x = x.reshape(-1, 1568)
         x = F.dropout(F.relu(self.fc1(x)), p=0.5, training=self.training)
         x = self.fc2(x)
         return x
