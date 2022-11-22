@@ -16,8 +16,6 @@ model_files = package_files('alibi_testing/models/')
 # Optional deps. Deps that are already installed by both alibi and alibi-detect do not need to be duplicated here
 extras_require = {
     'training': ['torchvision>=0.10.0, <1.0.0'], # deps required for training, but not to run models
-#    'alibi': [], # deps required by alibi to run the alibi-testing models
-#    'alibi-detect': [], # deps required by alibi-detect to run the alibi-testing models
 }
 
 
