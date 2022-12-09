@@ -19,7 +19,7 @@ extras_require = {
         'pandas>=0.23.3, <2.0.0',
         'requests>=2.21.0, <3.0.0',
         'scikit-learn>=0.20.2, <2.0.0',
-        'tensorflow>=2.0.0, !=2.6.0, !=2.6.1, <2.11.0',  
+        'tensorflow>=2.0.0, !=2.6.0, !=2.6.1, <2.11.0',
         'torch>=1.9.0, <2.0.0',
         'torchvision>=0.10.0, <1.0.0'
     ],
@@ -27,7 +27,7 @@ extras_require = {
 
 setup(
     name='alibi-testing',
-    version='0.1.0',
+    version='0.1.1',
     packages=find_packages(),
     python_requires='>=3.7',
     extras_require=extras_require,
