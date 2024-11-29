@@ -72,7 +72,7 @@ def saved_name(model_name):
     if int(tf_ver[0]) < 2:
         suffix = '.h5'
     else:
-        suffix = ''
+        suffix = '.keras'
     tf_ver = framework + tf_ver
 
     return '-'.join((data, model_name, tf_ver)) + suffix
