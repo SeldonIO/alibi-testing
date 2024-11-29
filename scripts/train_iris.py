@@ -90,6 +90,6 @@ if __name__ == '__main__':
         models.save(name)
     elif args.model == 'ae':
         ae_name = saved_name(args.model)
-        enc_name = 'enc'
+        enc_name = saved_name('enc')
         models[0].save(ae_name)
         models[1].save(enc_name)
