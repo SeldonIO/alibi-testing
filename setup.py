@@ -20,6 +20,7 @@ extras_require = {
         'requests>=2.21.0, <3.0.0',
         'scikit-learn>=1.0.0, <2.0.0',
         'tensorflow>=2.0.0, !=2.6.0, !=2.6.1, <2.19.0',
+        'tf-keras>=2.0.0,<2.19.0',
         'torch>=1.9.0, <3.0.0',
         'torchvision>=0.10.0, <1.0.0'
     ],
