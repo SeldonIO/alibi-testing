@@ -4,6 +4,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
 from alibi_testing.data import get_iris_data
+from utils import validate_args, get_format, get_legacy, save_model_tf
 
 
 def ffn_model():
@@ -48,48 +49,43 @@ def run_ffn():
 
 def run_ae():
     data = get_iris_data()
-    x_train, y_train = data['X_train'], data['y_train']
-    ae, enc, dec = ae_model()
+    x_train, _ = data['X_train'], data['y_train']
+    ae, enc, _ = ae_model()
     ae.fit(x_train, x_train, batch_size=32, epochs=100)
     return ae, enc
 
 
 def run_model(name):
     if name == 'ffn':
-        model = run_ffn()
-        return model
-    elif name == 'ae':
-        ae, enc = run_ae()
-        return ae, enc
-    else:
-        raise ValueError(f'Unknown model: {name}')
-
-
-def saved_name(model_name):
-    data = 'iris'
-    framework = 'tf'
-    tf_ver = tf.__version__
-    if int(tf_ver[0]) < 2:
-        suffix = '.h5'
-    else:
-        suffix = '.keras'
-    tf_ver = framework + tf_ver
-
-    return '-'.join((data, model_name, tf_ver)) + suffix
+        return run_ffn()
+    
+    if name == 'ae':
+        return run_ae()
+    
+    raise ValueError(f'Unknown model: {name}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('model', type=str, help='Name of the model to train')
-
+    parser.add_argument('--model', type=str, help='Name of the model to train')
+    parser.add_argument('--format', type=str, choices=["h5", "keras"])
     args = parser.parse_args()
+
+    # validate args combination
+    validate_args(args)
+
+    # train the model
     models = run_model(args.model)
 
+    # save the models
+    kwargs = {
+        "data": "iris",
+        "framework": "tf",
+        "version": tf.__version__
+    }
+    
     if args.model == 'ffn':
-        name = saved_name(args.model)
-        models.save(name)
+        save_model_tf(models, args, model_name=args.model, **kwargs) 
     elif args.model == 'ae':
-        ae_name = saved_name(args.model)
-        enc_name = saved_name('enc')
-        models[0].save(ae_name)
-        models[1].save(enc_name)
+        save_model_tf(models[0], args, model_name=args.model, **kwargs)
+        save_model_tf(models[1], args, model_name="enc", **kwargs)

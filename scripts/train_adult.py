@@ -1,4 +1,3 @@
-import os
 import argparse
 
 import tensorflow as tf
@@ -6,6 +5,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
 from alibi_testing.data import get_adult_data
+from utils import validate_args, get_format, get_legacy, save_model_tf
 
 
 def ffn_model():
@@ -18,14 +18,6 @@ def ffn_model():
     ffn.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     return ffn
-
-
-def get_legacy():
-    return os.environ.get("TF_USE_LEGACY_KERAS", None)
-
-
-def get_format(args):
-    return "" if args.format is None else args.format
 
 
 def run_model(args):
@@ -45,28 +37,24 @@ def run_model(args):
     return model
 
 
-def save_model(model, args):
-    data, framework = 'adult', "tf"
-    is_legacy, format = get_legacy(), get_format(args)
-    
-    tf_ver = framework + tf.__version__
-    name = '-'.join((data, args.model, tf_ver)) + '.' + format
-    kwargs = {"save_format": format} if is_legacy == "1" and format == "h5" else {}
-    model.save(name, **kwargs)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, help='Name of the model to train')
     parser.add_argument('--format', type=str, choices=["h5", "keras"])
     args = parser.parse_args()
 
-    is_legacy, format = get_legacy(), get_format(args)
-    if format == "keras" and is_legacy == "1":
-        raise RuntimeError("Invalid format when using `TF_USE_LEGACY_KERAS`.")
-    
-    if is_legacy is None and format == "":
-        raise RuntimeError("Invalid format. Expected `keras` format.")
+    # validate args combinations
+    validate_args(args)
 
+    # train the model
     model = run_model(args)
-    save_model(model, args)
+
+    # save the trained moel
+    save_model_tf(
+        model=model, 
+        args=args,
+        model_name=args.model,
+        data="adult", 
+        framework="tf", 
+        version=tf.__version__
+    )
