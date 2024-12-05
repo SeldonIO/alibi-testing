@@ -1,9 +1,11 @@
 import argparse
+
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
 from alibi_testing.data import get_adult_data
+from utils import validate_args, disable_v2_behavior, save_model
 
 
 def ffn_model():
@@ -18,35 +20,39 @@ def ffn_model():
     return ffn
 
 
-def run_model(name):
+def run_model(args):
+    # disable v2 behavior if necessary
+    disable_v2_behavior(args)
+
     data = get_adult_data(categorical_target=True)
     pre = data['preprocessor']
     x_train, x_test = pre.transform(data['X_train']), pre.transform(data['X_test'])
     y_train, y_test = data['y_train'], data['y_test']
-    model = globals()[f'{name}_model']()
+    
+    model = globals()[f'{args.model}_model']()
     model.fit(x_train, y_train, batch_size=128, epochs=5)
     model.evaluate(x_test, y_test)
     return model
 
 
-def saved_name(model_name):
-    data = 'adult'
-    framework = 'tf'
-    tf_ver = tf.__version__
-    if int(tf_ver[0]) < 2:
-        suffix = '.h5'
-    else:
-        suffix = '.keras'
-    tf_ver = framework + tf_ver
-
-    return '-'.join((data, model_name, tf_ver)) + suffix
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('model', type=str, help='Name of the model to train')
-
+    parser.add_argument('--model', type=str, help='Name of the model to train')
+    parser.add_argument('--format', type=str, choices=["h5", "keras"])
     args = parser.parse_args()
-    model = run_model(args.model)
-    name = saved_name(args.model)
-    model.save(name)
+
+    # validate args combinations
+    validate_args(args)
+
+    # train the model
+    model = run_model(args)
+
+    # save the trained moel
+    save_model(
+        model=model, 
+        args=args,
+        model_name=args.model,
+        data="adult", 
+        framework="tf", 
+        version=tf.__version__
+    )
