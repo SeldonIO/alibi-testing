@@ -1,9 +1,11 @@
 import argparse
 
+import tensorflow as tf
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D, Input, Reshape
 
 from alibi_testing.data import get_mnist_data
+from utils import validate_args, save_model_tf
 
 
 def cnn_model():
@@ -48,9 +50,22 @@ def run_model(name):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('model', type=str, help='Name of the model to train')
-    parser.add_argument('name', type=str, help='Name of the model to be saved')
+    parser.add_argument('--model', type=str, help='Name of the model to train')
+    parser.add_argument('--format', type=str, choices=["h5", "keras"])
     args = parser.parse_args()
 
+    # validate arguments combination
+    validate_args(args)
+
+    # train model
     model = run_model(args.model)
-    model.save(args.name)
+    
+    # save model
+    save_model_tf(
+        model=model,
+        args=args,
+        model_name=args.model,
+        data="mnist",
+        framework="tf",
+        version=tf.__version__
+    )
