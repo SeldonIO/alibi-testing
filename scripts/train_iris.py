@@ -4,7 +4,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
 from alibi_testing.data import get_iris_data
-from utils import validate_args, get_format, get_legacy, save_model_tf
+from utils import validate_args, disable_v2_behavior, save_model_tf
 
 
 def ffn_model():
@@ -43,7 +43,7 @@ def run_ffn():
     data = get_iris_data()
     x_train, y_train = data['X_train'], data['y_train']
     model = ffn_model()
-    model.fit(x_train, y_train, batch_size=128, epochs=500)
+    model.fit(x_train, y_train, batch_size=128, epochs=5)
     return model
 
 
@@ -55,14 +55,17 @@ def run_ae():
     return ae, enc
 
 
-def run_model(name):
-    if name == 'ffn':
+def run_model(args):
+    # disable v2 behavior if necessary
+    disable_v2_behavior(args)
+
+    if args.model == 'ffn':
         return run_ffn()
     
-    if name == 'ae':
+    if args.model == 'ae':
         return run_ae()
     
-    raise ValueError(f'Unknown model: {name}')
+    raise ValueError(f'Unknown model: {args.model}')
 
 
 if __name__ == '__main__':
@@ -75,7 +78,7 @@ if __name__ == '__main__':
     validate_args(args)
 
     # train the model
-    models = run_model(args.model)
+    models = run_model(args)
 
     # save the models
     kwargs = {

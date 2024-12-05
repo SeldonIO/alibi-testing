@@ -5,7 +5,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
 from alibi_testing.data import get_adult_data
-from utils import validate_args, get_format, get_legacy, save_model_tf
+from utils import validate_args, disable_v2_behavior, save_model_tf
 
 
 def ffn_model():
@@ -21,10 +21,8 @@ def ffn_model():
 
 
 def run_model(args):
-    is_legacy, format = get_legacy(), get_format(args)
-
-    if is_legacy == "1" and format == "h5":
-        tf.compat.v1.disable_v2_behavior()
+    # disable v2 behavior if necessary
+    disable_v2_behavior(args)
 
     data = get_adult_data(categorical_target=True)
     pre = data['preprocessor']

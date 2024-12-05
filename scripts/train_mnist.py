@@ -5,7 +5,7 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D, Input, Reshape
 
 from alibi_testing.data import get_mnist_data
-from utils import validate_args, save_model_tf
+from utils import validate_args, disable_v2_behavior, save_model_tf
 
 
 def cnn_model():
@@ -40,6 +40,9 @@ def logistic_model():
 
 
 def run_model(name):
+    # disable v2 behavior if necessary
+    disable_v2_behavior(args)
+
     data = get_mnist_data()
     x_train, y_train, x_test, y_test = data['X_train'], data['y_train'], data['X_test'], data['y_test']
     model = globals()[f'{name}_model']()
