@@ -4,7 +4,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
 from alibi_testing.data import get_iris_data
-from utils import validate_args, disable_v2_behavior, save_model_tf
+from utils import validate_args, disable_v2_behavior, save_model
 
 
 def ffn_model():
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     }
     
     if args.model == 'ffn':
-        save_model_tf(models, args, model_name=args.model, **kwargs) 
+        save_model(models, args, model_name=args.model, **kwargs) 
     elif args.model == 'ae':
-        save_model_tf(models[0], args, model_name=args.model, **kwargs)
-        save_model_tf(models[1], args, model_name="enc", **kwargs)
+        save_model(models[0], args, model_name=args.model, **kwargs)
+        save_model(models[1], args, model_name="enc", **kwargs)

@@ -5,7 +5,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
 from alibi_testing.data import get_adult_data
-from utils import validate_args, disable_v2_behavior, save_model_tf
+from utils import validate_args, disable_v2_behavior, save_model
 
 
 def ffn_model():
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     model = run_model(args)
 
     # save the trained moel
-    save_model_tf(
+    save_model(
         model=model, 
         args=args,
         model_name=args.model,

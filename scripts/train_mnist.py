@@ -5,7 +5,7 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D, Input, Reshape
 
 from alibi_testing.data import get_mnist_data
-from utils import validate_args, disable_v2_behavior, save_model_tf
+from utils import validate_args, disable_v2_behavior, save_model
 
 
 def cnn_model():
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     model = run_model(args.model)
     
     # save model
-    save_model_tf(
+    save_model(
         model=model,
         args=args,
         model_name=args.model,

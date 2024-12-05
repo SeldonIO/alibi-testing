@@ -1,4 +1,5 @@
 import os
+import torch
 import tensorflow as tf
 from logging import getLogger
 
@@ -30,10 +31,16 @@ def disable_v2_behavior(args):
         logger.warning("V2 behavior is disabled.")
 
 
-def save_model_tf(
+def save_model(
     model, args, model_name, data, framework, version
 ):
     is_legacy, format = get_legacy(), get_format(args)
     name = '-'.join((data, model_name, framework + version)) + '.' + format
     kwargs = {"save_format": format} if is_legacy == "1" and format == "h5" else {}
-    model.save(name, **kwargs)
+
+    if framework == "tf":
+        model.save(name, **kwargs)
+    elif framework == "pt":
+        torch.save(model, name)
+    else:
+        raise ValueError(f"Unknown framework: {framework}")
