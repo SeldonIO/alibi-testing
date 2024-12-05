@@ -41,6 +41,6 @@ def run_cf(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('model', type=str, help='h5 TensorFlow or Keras MNIST model.')
+    parser.add_argument('--model', type=str, help='h5 TensorFlow or Keras MNIST model.')
     args = parser.parse_args()
     run_cf(args)
