@@ -72,7 +72,7 @@ def saved_name(model_name):
     if int(tf_ver[0]) < 2:
         suffix = '.h5'
     else:
-        suffix = ''
+        suffix = '.keras'
     tf_ver = framework + tf_ver
 
     return '-'.join((data, model_name, tf_ver)) + suffix
@@ -90,6 +90,6 @@ if __name__ == '__main__':
         models.save(name)
     elif args.model == 'ae':
         ae_name = saved_name(args.model)
-        enc_name = 'enc'
+        enc_name = saved_name('enc')
         models[0].save(ae_name)
         models[1].save(enc_name)

@@ -13,7 +13,7 @@ def load(name: str):
     try:
         # tensorflow
         model = tf.keras.models.load_model(path)
-    except OSError:
+    except Exception:
         # pytorch
         model = torch.load(path)
     return model
