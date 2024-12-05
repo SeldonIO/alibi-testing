@@ -1,4 +1,6 @@
+import os
 import argparse
+
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
@@ -18,35 +20,53 @@ def ffn_model():
     return ffn
 
 
-def run_model(name):
+def get_legacy():
+    return os.environ.get("TF_USE_LEGACY_KERAS", None)
+
+
+def get_format(args):
+    return "" if args.format is None else args.format
+
+
+def run_model(args):
+    is_legacy, format = get_legacy(), get_format(args)
+
+    if is_legacy == "1" and format == "h5":
+        tf.compat.v1.disable_v2_behavior()
+
     data = get_adult_data(categorical_target=True)
     pre = data['preprocessor']
     x_train, x_test = pre.transform(data['X_train']), pre.transform(data['X_test'])
     y_train, y_test = data['y_train'], data['y_test']
-    model = globals()[f'{name}_model']()
+    
+    model = globals()[f'{args.model}_model']()
     model.fit(x_train, y_train, batch_size=128, epochs=5)
     model.evaluate(x_test, y_test)
     return model
 
 
-def saved_name(model_name):
-    data = 'adult'
-    framework = 'tf'
-    tf_ver = tf.__version__
-    if int(tf_ver[0]) < 2:
-        suffix = '.h5'
-    else:
-        suffix = '.keras'
-    tf_ver = framework + tf_ver
-
-    return '-'.join((data, model_name, tf_ver)) + suffix
+def save_model(model, args):
+    data, framework = 'adult', "tf"
+    is_legacy, format = get_legacy(), get_format(args)
+    
+    tf_ver = framework + tf.__version__
+    name = '-'.join((data, args.model, tf_ver)) + '.' + format
+    kwargs = {"save_format": format} if is_legacy == "1" and format == "h5" else {}
+    model.save(name, **kwargs)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('model', type=str, help='Name of the model to train')
-
+    parser.add_argument('--model', type=str, help='Name of the model to train')
+    parser.add_argument('--format', type=str, choices=["h5", "keras"])
     args = parser.parse_args()
-    model = run_model(args.model)
-    name = saved_name(args.model)
-    model.save(name)
+
+    is_legacy, format = get_legacy(), get_format(args)
+    if format == "keras" and is_legacy == "1":
+        raise RuntimeError("Invalid format when using `TF_USE_LEGACY_KERAS`.")
+    
+    if is_legacy is None and format == "":
+        raise RuntimeError("Invalid format. Expected `keras` format.")
+
+    model = run_model(args)
+    save_model(model, args)
